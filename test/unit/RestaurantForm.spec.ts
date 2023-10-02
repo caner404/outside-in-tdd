@@ -35,11 +35,19 @@ describe("RestaurantForm", () => {
   });
 
   describe("when input is filled in", () => {
-    it("should dispatch a create action", () => {
+    it("should dispatch a create action", async () => {
       wrapper.find("[data-test='new-restaurant-name'] input").setValue(restaurantName);
-      wrapper.find("[data-test='new-restaurant-add-button']").trigger("click");
+      await wrapper.find("[data-test='new-restaurant-add-button']").trigger("click");
 
       expect(restaurantStore.create).toHaveBeenCalledWith(restaurantName);
+    });
+
+    it("clears the input ", async () => {
+      wrapper.find("[data-test='new-restaurant-name'] input").setValue(restaurantName);
+      await wrapper.find("[data-test='new-restaurant-add-button']").trigger("click");
+
+      const inputValue = wrapper.find("[data-test='new-restaurant-name'] input").element as HTMLInputElement;
+      expect(inputValue.value).toEqual("");
     });
   });
 });

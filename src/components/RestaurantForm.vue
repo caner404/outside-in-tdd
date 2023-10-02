@@ -3,10 +3,12 @@ import { useRestaurantStore } from "@/stores/restaurant";
 import { ref } from "vue";
 
 const store = useRestaurantStore();
-function handleSave() {
-  store.create(newRestaurantName.value);
-}
 const newRestaurantName = ref("");
+
+async function handleSave() {
+  await store.create(newRestaurantName.value);
+  newRestaurantName.value = "";
+}
 </script>
 <template>
   <form @submit.prevent="handleSave">
