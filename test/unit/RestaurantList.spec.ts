@@ -1,11 +1,12 @@
 import RestaurantList from "@/components/RestaurantList.vue";
-import { useRestaurantStore, type Restaurant } from "@/stores/restaurant";
+import type { Restaurant } from "@/services/RestaurantService";
+import { useRestaurantStore } from "@/stores/restaurant";
 import { createTestingPinia } from "@pinia/testing";
 import { mount } from "@vue/test-utils";
 import { beforeEach, describe, expect, it } from "vitest";
+import { createVuetify } from "vuetify";
 import * as components from "vuetify/components";
 import * as directives from "vuetify/directives";
-import { createVuetify } from "vuetify";
 
 const vuetify = createVuetify({
   components,

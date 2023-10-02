@@ -3,8 +3,10 @@ import { setActivePinia, createPinia } from "pinia";
 import { beforeEach, it, expect, describe, vi, afterEach } from "vitest";
 import { useRestaurantStore } from "@/stores/restaurant";
 import axios from "axios";
+import { createRestaurant, fetchRestaurants } from "@/services/RestaurantService";
 
 vi.mock("axios");
+vi.mock("@/services/RestaurantService");
 describe("Restaurant Store", () => {
   const records = [
     { id: 1, name: "Pasta Place " },
@@ -28,10 +30,7 @@ describe("Restaurant Store", () => {
 
   describe("when loading succeeds", () => {
     beforeEach(async () => {
-      vi.mocked(axios.get).mockResolvedValue({
-        data: records,
-      });
-
+      vi.mocked(fetchRestaurants).mockResolvedValue(records);
       await restaurant.load();
     });
 
@@ -48,8 +47,7 @@ describe("Restaurant Store", () => {
 
   describe("when loading fails", () => {
     beforeEach(async () => {
-      //vi.spyOn(restaurant, "fetchRestaurants").mockRejectedValue(new Error());
-      vi.mocked(axios.get).mockRejectedValue(new Error());
+      vi.mocked(fetchRestaurants).mockRejectedValue(new Error());
       await restaurant.load();
     });
 
@@ -76,6 +74,24 @@ describe("Restaurant Store", () => {
     it("clears the loading flag", () => {
       restaurant.load();
       expect(restaurant.loadError).toBe(false);
+    });
+  });
+
+  describe("create action", () => {
+    const newRestaurantName = "Sushi Place";
+    const existingRestaurant = { id: 1, name: "Pizza Place" };
+    const responseRestaurant = { id: 2, name: newRestaurantName };
+
+    beforeEach(() => {
+      setActivePinia(createPinia());
+      restaurant = useRestaurantStore();
+    });
+
+    it("saves the restaurant on the server", async () => {
+      vi.mocked(createRestaurant).mockResolvedValue(responseRestaurant);
+      await restaurant.create(newRestaurantName);
+
+      expect(createRestaurant).toHaveBeenCalled();
     });
   });
 });

@@ -1,12 +1,6 @@
-import { ref, computed } from "vue";
+import { createRestaurant, fetchRestaurants, type Restaurant } from "@/services/RestaurantService";
 import { defineStore } from "pinia";
-import axios from "axios";
-
-const baseURL = "https://api.outsidein.dev/KSSSt61lGV18iX6qlzzVgILVksMuenlT";
-export interface Restaurant {
-  id: number;
-  name: string;
-}
+import { computed, ref } from "vue";
 
 export const useRestaurantStore = defineStore("restaurant", () => {
   const records = ref([] as Restaurant[]);
@@ -15,22 +9,27 @@ export const useRestaurantStore = defineStore("restaurant", () => {
 
   const restaurants = computed(() => records.value);
 
-  async function fetchRestaurants() {
-    const result = await axios.get(`${baseURL}/restaurants`);
-    return result.data;
-  }
-
   async function load() {
     loading.value = true;
     loadError.value = false;
     try {
-      records.value = await fetchRestaurants();
+      const newRecords = await fetchRestaurants();
+      console.log(newRecords);
+      records.value = newRecords;
     } catch (error) {
       console.error(error);
       loadError.value = true;
     }
     loading.value = false;
   }
+  async function create(newRestaurantName: string) {
+    try {
+      const newRecord = await createRestaurant(newRestaurantName);
+      records.value.push(newRecord);
+    } catch (error) {
+      console.error(error);
+    }
+  }
 
-  return { fetchRestaurants, restaurants, load, loading, loadError };
+  return { restaurants, load, loading, loadError, create };
 });
