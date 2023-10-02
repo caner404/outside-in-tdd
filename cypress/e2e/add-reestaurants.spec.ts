@@ -1,6 +1,5 @@
 describe("Creating a Restaurant", () => {
   it("allows adding a restaurant", () => {
-    const restaurantId = 27;
     const restaurantName = "Sushi Place";
 
     cy.intercept("GET", "https://api.outsidein.dev/KSSSt61lGV18iX6qlzzVgILVksMuenlT/restaurants", {
@@ -8,10 +7,9 @@ describe("Creating a Restaurant", () => {
       body: [],
     }).as("getRestaurants");
 
-    cy.intercept("POST", "/https://api.outsidein.dev/KSSSt61lGV18iX6qlzzVgILVksMuenlT/restaurants", {
+    cy.intercept("POST", "https://api.outsidein.dev/KSSSt61lGV18iX6qlzzVgILVksMuenlT/restaurants", {
       statusCode: 201,
       body: {
-        id: restaurantId,
         name: restaurantName,
       },
     }).as("addRestaurant");
@@ -21,10 +19,11 @@ describe("Creating a Restaurant", () => {
     cy.get('[placeholder="Add Restaurant"]').type(restaurantName);
     cy.contains("Add").click();
 
-    cy.wait("@addRestaurant").its("requestBody").should("deep.equal", {
+    cy.wait("@addRestaurant").its("request.body").should("deep.equal", {
       name: restaurantName,
     });
 
+    cy.contains(restaurantName).should("exist");
     cy.contains(restaurantName);
   });
 });
