@@ -34,6 +34,12 @@ describe("RestaurantForm", () => {
     wrapper.unmount();
   });
 
+  describe("initially", () => {
+    it("should not display a validation error", () => {
+      expect(wrapper.find("[data-test='new-restaurant-error']").exists()).toBe(false);
+    });
+  });
+
   describe("when input is filled in", () => {
     beforeEach(async () => {
       wrapper.find("[data-test='new-restaurant-name'] input").setValue(restaurantName);
@@ -46,6 +52,36 @@ describe("RestaurantForm", () => {
     it("clears the input ", () => {
       const inputValue = wrapper.find("[data-test='new-restaurant-name'] input").element as HTMLInputElement;
       expect(inputValue.value).toEqual("");
+    });
+
+    it("does not display a validation error", () => {
+      expect(wrapper.find("[data-test='new-restaurant-error']").exists()).toBe(false);
+    });
+  });
+
+  describe("when empty", () => {
+    beforeEach(async () => {
+      wrapper.find("[data-test='new-restaurant-name'] input").setValue("");
+      await wrapper.find("[data-test='new-restaurant-add-button']").trigger("click");
+    });
+    it("should display a validation error", () => {
+      expect(wrapper.find("[data-test='new-restaurant-error']").text()).toContain("Name is required");
+    });
+    it("does not dispatch the create action", () => {
+      expect(restaurantStore.create).not.toHaveBeenCalled();
+    });
+  });
+
+  describe("when correcting a validation error", () => {
+    beforeEach(() => {
+      wrapper.find("[data-test='new-restaurant-name'] input").setValue("");
+      wrapper.find("[data-test='new-restaurant-add-button']").trigger("click");
+      wrapper.find("[data-test='new-restaurant-name'] input").setValue(restaurantName);
+      wrapper.find("[data-test='new-restaurant-add-button']").trigger("click");
+    });
+
+    it("clears the validation error", () => {
+      expect(wrapper.find("[data-test='new-restaurant-error']").exists()).toBe(false);
     });
   });
 });

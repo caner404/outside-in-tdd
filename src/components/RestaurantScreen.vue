@@ -6,8 +6,8 @@ import RestaurantForm from "./RestaurantForm.vue";
   <VCard>
     <VCardTitle>Restaurants</VCardTitle>
     <VCardText>
-      <RestaurantList />
       <RestaurantForm />
+      <RestaurantList />
     </VCardText>
   </VCard>
 </template>
